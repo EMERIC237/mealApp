@@ -1,10 +1,7 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
   FlatList,
-  View,
-  TouchableOpacity,
 } from "react-native";
 
 import { CATEGORIES } from "../data/dummy-data";
