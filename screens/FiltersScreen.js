@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Text, View, Switch, Platform } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/HeaderButton";
@@ -18,11 +18,13 @@ const FiltersSwitch = (props) => {
   );
 };
 const FiltersScreen = (props) => {
+  const { navigation } = props;
   const [isGlutenFree, setIsGlutenFree] = useState(false);
   const [isLactoseFree, setIsLactoseFree] = useState(false);
   const [isVegan, setIsVegan] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
-  const saveFilters = () => {
+
+  const saveFilters = useCallback(() => {
     const appliedFilters = {
       glutenFree: isGlutenFree,
       lactoseFree: isLactoseFree,
@@ -31,10 +33,11 @@ const FiltersScreen = (props) => {
     };
 
     console.log(appliedFilters);
-  };
+  }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian]);
+
   useEffect(() => {
-    props.navigation.setParams({ save: saveFilters });
-  });
+    navigation.setParams({ save: saveFilters });
+  }, [saveFilters]);
 
   return (
     <View style={styles.screen}>
@@ -52,14 +55,14 @@ const FiltersScreen = (props) => {
         onChange={(newValue) => {
           setIsLactoseFree(newValue);
         }}
-      />{" "}
+      />
       <FiltersSwitch
         label="Vegan"
         state={isVegan}
         onChange={(newValue) => {
           setIsVegan(newValue);
         }}
-      />{" "}
+      />
       <FiltersSwitch
         label="Vegeterian"
         state={isVegetarian}
@@ -82,6 +85,15 @@ FiltersScreen.navigationOptions = (navData) => {
           onPress={() => {
             navData.navigation.toggleDrawer();
           }}
+        />
+      </HeaderButtons>
+    ),
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={HeaderButton}>
+        <Item
+          title="Save"
+          iconName="ios-save"
+          onPress={navData.navigation.getParam("save")}
         />
       </HeaderButtons>
     ),
