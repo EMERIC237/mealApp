@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 const CategoryMealsScreen = (props) => {
   let catId = props.navigation.getParam("categoryId");
   const availableMeals = useSelector((state) => state.meals.filteredMeals);
-
+  // console.log(availableMeals);
   const displayedMeals = availableMeals.filter((meal) =>
     meal.categoryIds.includes(catId)
   );

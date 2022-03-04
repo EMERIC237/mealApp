@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Switch, Platform } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../components/HeaderButton";
 import Colors from "../constants/Colors";
+import { useDispatch } from "react-redux";
+import { filterMeal } from "../store/actions/mealsActions";
 
 const FiltersSwitch = (props) => {
   return (
@@ -25,19 +27,28 @@ const FiltersScreen = (props) => {
   const [isVegetarian, setIsVegetarian] = useState(false);
 
   const saveFilters = useCallback(() => {
-    const appliedFilters = {
-      glutenFree: isGlutenFree,
-      lactoseFree: isLactoseFree,
-      vegan: isVegan,
+    return {
+      isGlutenFree: isGlutenFree,
+      isLactoseFree: isLactoseFree,
+      isVegan: isVegan,
       isVegetarian: isVegetarian,
     };
-
     console.log(appliedFilters);
   }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian]);
-
   useEffect(() => {
     navigation.setParams({ save: saveFilters });
   }, [saveFilters]);
+
+  const dispatch = useDispatch();
+  const savefiltersHandler = useCallback(
+    (options) => {
+      dispatch(filterMeal(options));
+    },
+    [dispatch]
+  );
+  useEffect(() => {
+    props.navigation.setParams({ saveHandler: savefiltersHandler });
+  }, [savefiltersHandler]);
 
   return (
     <View style={styles.screen}>
@@ -75,6 +86,8 @@ const FiltersScreen = (props) => {
 };
 
 FiltersScreen.navigationOptions = (navData) => {
+  const options = navData.navigation.getParam("save");
+  const saveFilters = navData.navigation.getParam("saveHandler");
   return {
     headerTitle: "Filtered meals",
     headerLeft: () => (
@@ -93,7 +106,11 @@ FiltersScreen.navigationOptions = (navData) => {
         <Item
           title="Save"
           iconName="ios-save"
-          onPress={navData.navigation.getParam("save")}
+          onPress={() => {
+            const filterOptions = options();
+            console.log(filterOptions);
+            saveFilters(filterOptions);
+          }}
         />
       </HeaderButtons>
     ),
