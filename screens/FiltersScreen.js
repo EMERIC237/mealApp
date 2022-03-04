@@ -25,31 +25,21 @@ const FiltersScreen = (props) => {
   const [isLactoseFree, setIsLactoseFree] = useState(false);
   const [isVegan, setIsVegan] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
+  const dispatch = useDispatch();
 
   const saveFilters = useCallback(() => {
-    return {
+    const appliedfilters = {
       isGlutenFree: isGlutenFree,
       isLactoseFree: isLactoseFree,
       isVegan: isVegan,
       isVegetarian: isVegetarian,
     };
-    console.log(appliedFilters);
-  }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian]);
+    dispatch(filterMeal(appliedfilters));
+  }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian, dispatch]);
   useEffect(() => {
     navigation.setParams({ save: saveFilters });
   }, [saveFilters]);
-
-  const dispatch = useDispatch();
-  const savefiltersHandler = useCallback(
-    (options) => {
-      dispatch(filterMeal(options));
-    },
-    [dispatch]
-  );
-  useEffect(() => {
-    props.navigation.setParams({ saveHandler: savefiltersHandler });
-  }, [savefiltersHandler]);
-
+  
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Available Filters / Restrictions</Text>
@@ -86,8 +76,6 @@ const FiltersScreen = (props) => {
 };
 
 FiltersScreen.navigationOptions = (navData) => {
-  const options = navData.navigation.getParam("save");
-  const saveFilters = navData.navigation.getParam("saveHandler");
   return {
     headerTitle: "Filtered meals",
     headerLeft: () => (
@@ -106,11 +94,7 @@ FiltersScreen.navigationOptions = (navData) => {
         <Item
           title="Save"
           iconName="ios-save"
-          onPress={() => {
-            const filterOptions = options();
-            console.log(filterOptions);
-            saveFilters(filterOptions);
-          }}
+          onPress={navData.navigation.getParam("save")}
         />
       </HeaderButtons>
     ),

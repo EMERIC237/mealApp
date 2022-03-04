@@ -29,12 +29,19 @@ const mealsReducer = (state = initialState, action) => {
       let { isGlutenFree, isLactoseFree, isVegan, isVegetarian } =
         action.options;
       let newFilteredMeals = state.meals.filter((meal) => {
-        return (
-          meal.isGlutenFree === isGlutenFree ||
-          meal.isLactoseFree === isLactoseFree ||
-          meal.isVegan === isVegan ||
-          meal.isVegetarian === isVegetarian
-        );
+        if (isGlutenFree && !meal.isGlutenFree) {
+          return false;
+        }
+        if (isLactoseFree && !meal.isLactoseFree) {
+          return false;
+        }
+        if (isVegan && !meal.isVegan) {
+          return false;
+        }
+        if (isVegetarian && !meal.isVegetarian) {
+          return false;
+        }
+        return true;
       });
       return { ...state, filteredMeals: newFilteredMeals };
     default:
